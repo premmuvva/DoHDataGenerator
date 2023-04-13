@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 
-from meter.features.context.packet_direction import PacketDirection
+from features.context.packet_direction import PacketDirection
+from scapy.layers.inet import IP, TCP, UDP
 
 
 def get_packet_flow_key(packet, direction) -> tuple:
@@ -23,15 +24,16 @@ def get_packet_flow_key(packet, direction) -> tuple:
         TCP flags.
 
     """
-    if 'TCP' in packet:
-        protocol = 'TCP'
-    elif 'UDP' in packet:
-        protocol = 'UDP'
+    if TCP in packet:
+        protocol = TCP
+    elif UDP in packet:
+        protocol = UDP
     else:
         raise Exception('Only TCP protocols are supported.')
 
     if direction == PacketDirection.FORWARD:
-        dest_ip = packet['IP'].dst
+        print(packet.summary())
+        dest_ip = packet[IP].dst
         src_ip = packet['IP'].src
         src_port = packet[protocol].sport
         dest_port = packet[protocol].dport
